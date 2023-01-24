@@ -6,30 +6,95 @@ import React from 'react';
 //LETS CREATE COMPONENTS AND TRY TO GET EVERYTHING WITH JUST ONE STATE
 
 function App() {
+  //let d = new Date();
 
-  const [breakLength, setBreakLength] = React.useState(5)
-  const [sessionLength, setSessionLength] = React.useState(25)
+
+  const [state, setState] = React.useState({
+                                              breakLength: 5,
+                                              sessionLength: 25,
+                                              remaining: "25:00", 
+                                              ongoing: false
+  })
+
+  //let futureDate = new Date();
+  
 
   function handleReset () {
 
-    setBreakLength(5)
-    setSessionLength(25)
+    setState(prev=> {
+      return (
+        {...prev, 
+          breakLength: 5,
+          sessionLength: 25, 
+          remaining: "25:00"
+        }
+      )
+    })
 
   }
 
   function handleSettingBreakOrSessionLength(event){
     const increase_or_decrease = event.target.parentNode.id
      if (increase_or_decrease === "break-decrement") {
-      setBreakLength(prev=> prev-1)
+      setState(prev => {
+        if (prev.breakLength > 1) {
+          return {
+            ...prev, breakLength: prev.breakLength - 1
+          }
+        }
+        else {
+          return prev
+        }
+       
+      })
     }
     else if (increase_or_decrease === "break-increment") {
-      setBreakLength(prev=> prev+1)
+      setState(prev => {
+        if (prev.breakLength < 60) {
+          return {
+            ...prev, breakLength: prev.breakLength + 1
+          }
+        }
+        else return prev
+      
+      })
     }
     else if(increase_or_decrease === "session-decrement") {
-      setSessionLength(prev => prev-1)
+      setState(prev => {
+        if (prev.sessionLength > 0) {
+          let remain;
+          if (prev.sessionLength-1 < 10) {
+            remain = "0" + (prev.sessionLength - 1);
+          }
+          else remain = prev.sessionLength-1
+          return {
+            ...prev, 
+            sessionLength: prev.sessionLength - 1, 
+            remaining: remain + ":00"
+          }
+        }
+        else return prev
+          
+      })
     }
     else if (increase_or_decrease === "session-increment") {
-      setSessionLength(prev => prev+1)
+      setState(prev => {
+        if (prev.sessionLength < 60) {
+          let remain;
+          if (prev.sessionLength + 1 < 10) {
+            remain = "0" + (prev.sessionLength + 1);
+          }
+          else remain = prev.sessionLength+1
+          return {
+            ...prev, 
+            sessionLength: prev.sessionLength + 1, 
+            remaining: remain + ":00"
+          }
+        }
+        else return prev
+
+          
+      })
     }
 
    console.log(increase_or_decrease)
@@ -44,7 +109,7 @@ function App() {
           <div id='break-label'>Break Length</div>
           <div className='break_counter_container'>
             <div id="break-decrement" onClick={handleSettingBreakOrSessionLength}><img src={down} alt="decrement break length"/></div>
-            <div id="break-length">{breakLength}</div>
+            <div id="break-length">{state.breakLength}</div>
             <div id="break-increment" onClick={handleSettingBreakOrSessionLength}><img src={up} alt="increment break length"/></div>
 
           </div>
@@ -53,7 +118,7 @@ function App() {
           <div id='session-label'>Session Length</div>
           <div className='session_counter_container'>
             <div id="session-decrement" onClick={handleSettingBreakOrSessionLength}><img src={down} alt="decrement break length"/></div>
-            <div id="session-length">{sessionLength}</div>
+            <div id="session-length">{state.sessionLength}</div>
             <div id="session-increment" onClick={handleSettingBreakOrSessionLength}><img src={up} alt="increment break length"/></div>
 
           </div>
@@ -63,7 +128,7 @@ function App() {
 
       <div className='session_container'>
           <div id="timer-label">Session</div>
-          <div id="timer-left">25:00</div>
+          <div id="time-left">{state.remaining}</div>
           <div className='button_container'>
             <div id="start_stop">start/stop</div>
             <div id="reset" onClick={handleReset}>Reset</div>
