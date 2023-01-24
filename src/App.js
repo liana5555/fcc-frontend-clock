@@ -33,8 +33,9 @@ function App() {
 
   }
 
-  function handleSettingBreakOrSessionLength(event){
-    const increase_or_decrease = event.target.parentNode.id
+  function handleSettingBreakOrSessionLength(increase_or_decrease){
+    
+  
      if (increase_or_decrease === "break-decrement") {
       setState(prev => {
         if (prev.breakLength > 1) {
@@ -61,7 +62,7 @@ function App() {
     }
     else if(increase_or_decrease === "session-decrement") {
       setState(prev => {
-        if (prev.sessionLength > 0) {
+        if (prev.sessionLength > 1) {
           let remain;
           if (prev.sessionLength-1 < 10) {
             remain = "0" + (prev.sessionLength - 1);
@@ -96,8 +97,11 @@ function App() {
           
       })
     }
+  
+        
 
-   console.log(increase_or_decrease)
+
+ 
 
   }
 
@@ -108,18 +112,18 @@ function App() {
         <div className='break_container'>
           <div id='break-label'>Break Length</div>
           <div className='break_counter_container'>
-            <div id="break-decrement" onClick={handleSettingBreakOrSessionLength}><img src={down} alt="decrement break length"/></div>
+            <div id="break-decrement" onClick={() => handleSettingBreakOrSessionLength("break-decrement")}><img name="break-decrement" src={down} alt="decrement break length"/></div>
             <div id="break-length">{state.breakLength}</div>
-            <div id="break-increment" onClick={handleSettingBreakOrSessionLength}><img src={up} alt="increment break length"/></div>
+            <div id="break-increment" onClick={() => handleSettingBreakOrSessionLength("break-increment")}><img name="break-increment" src={up} alt="increment break length"/></div>
 
           </div>
         </div>
         <div className='session_length_container'>
           <div id='session-label'>Session Length</div>
           <div className='session_counter_container'>
-            <div id="session-decrement" onClick={handleSettingBreakOrSessionLength}><img src={down} alt="decrement break length"/></div>
+            <div id="session-decrement" onClick={() => handleSettingBreakOrSessionLength("session-decrement")}><img name="session-decrement" src={down} alt="decrement sesiion length"/></div>
             <div id="session-length">{state.sessionLength}</div>
-            <div id="session-increment" onClick={handleSettingBreakOrSessionLength}><img src={up} alt="increment break length"/></div>
+            <div id="session-increment" onClick={() =>handleSettingBreakOrSessionLength("session-increment")}><img name="session-decrement" src={up} alt="increment session length"/></div>
 
           </div>
         </div>
