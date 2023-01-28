@@ -3,20 +3,72 @@ import up from './arrow-up-solid.svg';
 import './App.css';
 import React from 'react';
 
-//LETS CREATE COMPONENTS AND TRY TO GET EVERYTHING WITH JUST ONE STATE
+
 
 function App() {
   //let d = new Date();
+
+  let start;
+  let end;
+  let minutes;
+  let seconds;
 
 
   const [state, setState] = React.useState({
                                               breakLength: 5,
                                               sessionLength: 25,
                                               remaining: "25:00", 
-                                              ongoing: false
+                                              ongoing: false, 
+                                              state: "session",
+                                              remain_in_s: 1500
   })
 
-  //let futureDate = new Date();
+
+React.useEffect(()=> {
+  
+/*
+    const interval = setInterval(() => {
+      if (state.ongoing) {
+        console.log("This is working: ")
+      setState(prev => {
+      return ({
+        ...prev, remaining: (creating_string(minutes, seconds))
+      })
+  
+    })
+    start = start.getTime() + 1000
+  }
+  }, 1000);
+
+  
+ return () => {
+    clearInterval(interval);
+  }; */
+
+
+  const interval = setInterval(() => 
+  {
+  if (state.ongoing) {
+    setState((prev) => {
+      return ({
+        ...prev, 
+        remain_in_s: (prev.remain_in_s - 1)
+      })
+     })
+     console.log(state)
+  }
+  else {
+    console.log("not updating")
+    console.log(state)
+  }
+   
+  }, 1000);
+  return () => {
+    clearInterval(interval);
+  };
+}, [])
+
+
   
 
   function handleReset () {
@@ -26,7 +78,11 @@ function App() {
         {...prev, 
           breakLength: 5,
           sessionLength: 25, 
-          remaining: "25:00"
+          remaining: "25:00",
+          ongoing: false,
+          state: "session",
+          remain_in_s: 1500
+
         }
       )
     })
@@ -104,6 +160,92 @@ function App() {
  
 
   }
+  function creating_string(minutes, seconds) {
+
+    let seconds_string;
+    let minutes_string;
+
+    if (seconds < 10) {
+        seconds_string = "0" + seconds
+    }
+    else {
+      seconds_string = seconds
+    }
+
+
+    if (minutes < 10) {
+        minutes_string = "0" + minutes
+    }
+    else{
+      minutes_string = minutes
+    }
+
+    return (minutes_string + ":" + seconds_string)
+
+}
+
+
+  function handleStartStop () {
+    setState(prev=> {
+      return (
+        {...prev, 
+          ongoing: (!prev.ongoing)
+        }
+      )
+    })
+  }
+  /*  console.log(state)
+
+    if (state.state === "session"){
+      console.log(state)
+      start = new Date(Date.now())
+      end = new Date(start.getTime() + (state.sessionLength)*60*1000)
+
+      minutes = ((end.getTime() - start.getTime())/1000)/60
+      seconds = ((end.getTime() - start.getTime())/1000)%60 
+  /*  const start = new Date(Date.now())
+      console.log(start)
+     
+
+      const end= new Date(start.getTime() + (state.sessionLength)*60*1000)
+      console.log(end)
+
+      let minutes = ((end.getTime() - start.getTime())/1000)/60
+      let seconds = ((end.getTime() - start.getTime())/1000)%60 
+      
+
+      console.log("remaining time " + creating_string(minutes,seconds))
+
+      
+
+  
+   
+     while (minutes !== 0 && seconds >= 0) {
+        let currenttime = new Date(Date.now())
+        minutes = Math.floor(((end.getTime() - currenttime.getTime())/1000)/60)
+        seconds = Math.floor(((end.getTime() - currenttime.getTime())/1000)%60)
+        if (((end.getTime() - currenttime.getTime())%1000) === 0) {
+            let remain = (creating_string(minutes, seconds))
+            console.log(remain)
+            console.log(state)
+              setState(prev => {
+                return (
+                  {
+                  ...prev, remaining: remain
+                }
+                )
+              })
+            }
+            
+        }    
+  
+*/
+
+
+
+    
+
+  
 
   return (
     <main>
@@ -134,7 +276,7 @@ function App() {
           <div id="timer-label">Session</div>
           <div id="time-left">{state.remaining}</div>
           <div className='button_container'>
-            <div id="start_stop">start/stop</div>
+            <div id="start_stop" onClick={handleStartStop}>start/stop</div>
             <div id="reset" onClick={handleReset}>Reset</div>
           </div>
       </div>
