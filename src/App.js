@@ -2,6 +2,7 @@ import down from './arrow-down-solid.svg';
 import up from './arrow-up-solid.svg';
 import './App.css';
 import React from 'react';
+import beep from './mixkit-sport-start-bleeps-918.wav'
 
 
 
@@ -19,6 +20,13 @@ function App() {
 
 
 React.useEffect(()=> {
+
+  if (state.remain_in_s === 0 && state.ongoing ===true) {
+    let audio_tag = document.getElementById("beep");
+        console.log(audio_tag)
+        audio_tag.currentTime=0;
+        audio_tag.play();
+  }
 
   const interval = setInterval(() => 
   {
@@ -46,6 +54,8 @@ React.useEffect(()=> {
           })
 
         }
+        
+        
       }
       
      })
@@ -57,12 +67,17 @@ React.useEffect(()=> {
   return () => {
     clearInterval(interval);
   };
-}, [state.ongoing])
+}, [state.ongoing, state.remain_in_s]) //state.remain_in_s
 
 
   
 
   function handleReset () {
+    let audio_tag = document.getElementById("beep");
+        console.log(audio_tag)
+        audio_tag.pause();
+        audio_tag.currentTime=0;
+        
 
     setState(prev=> {
       return (
@@ -224,6 +239,7 @@ React.useEffect(()=> {
           <div id="timer-label">{state.state}</div>
           <div id="time-left">{state.ongoing ? creating_string(state.remain_in_s) : state.remaining}</div>
           <div className='button_container'>
+            <audio loop={false} src={beep} id="beep"></audio>
             <div id="start_stop" onClick={handleStartStop}>start/stop</div>
             <div id="reset" onClick={handleReset}>Reset</div>
           </div>
