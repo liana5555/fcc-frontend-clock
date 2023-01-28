@@ -6,12 +6,6 @@ import React from 'react';
 
 
 function App() {
-  //let d = new Date();
-
-  let start;
-  let end;
-  let minutes;
-  let seconds;
 
 
   const [state, setState] = React.useState({
@@ -19,54 +13,51 @@ function App() {
                                               sessionLength: 25,
                                               remaining: "25:00", 
                                               ongoing: false, 
-                                              state: "session",
+                                              state: "Session",
                                               remain_in_s: 1500
   })
 
 
 React.useEffect(()=> {
-  
-/*
-    const interval = setInterval(() => {
-      if (state.ongoing) {
-        console.log("This is working: ")
-      setState(prev => {
-      return ({
-        ...prev, remaining: (creating_string(minutes, seconds))
-      })
-  
-    })
-    start = start.getTime() + 1000
-  }
-  }, 1000);
-
-  
- return () => {
-    clearInterval(interval);
-  }; */
-
 
   const interval = setInterval(() => 
   {
   if (state.ongoing) {
     setState((prev) => {
-      return ({
-        ...prev, 
-        remain_in_s: (prev.remain_in_s - 1)
-      })
+      if (prev.remain_in_s !== 0) {
+        return ({
+          ...prev, 
+          remain_in_s: (prev.remain_in_s - 1)
+        })
+      }
+      else {
+        if (prev.state === "Session") {
+          return ({
+            ...prev, 
+            remain_in_s: (prev.breakLength * 60),
+            state: "Break"
+          })
+        }
+        else if (prev.state === "Break") {
+          return ({
+            ...prev, 
+            remain_in_s: (prev.sessionLength * 60),
+            state: "Session"
+          })
+
+        }
+      }
+      
      })
-     console.log(state)
+    
   }
-  else {
-    console.log("not updating")
-    console.log(state)
-  }
+ 
    
   }, 1000);
   return () => {
     clearInterval(interval);
   };
-}, [])
+}, [state.ongoing])
 
 
   
@@ -80,7 +71,7 @@ React.useEffect(()=> {
           sessionLength: 25, 
           remaining: "25:00",
           ongoing: false,
-          state: "session",
+          state: "Session",
           remain_in_s: 1500
 
         }
@@ -127,7 +118,8 @@ React.useEffect(()=> {
           return {
             ...prev, 
             sessionLength: prev.sessionLength - 1, 
-            remaining: remain + ":00"
+            remaining: remain + ":00",
+            remain_in_s: ((prev.sessionLength - 1) * 60)
           }
         }
         else return prev
@@ -145,7 +137,8 @@ React.useEffect(()=> {
           return {
             ...prev, 
             sessionLength: prev.sessionLength + 1, 
-            remaining: remain + ":00"
+            remaining: remain + ":00",
+            remain_in_s: ((prev.sessionLength + 1) * 60)
           }
         }
         else return prev
@@ -160,7 +153,10 @@ React.useEffect(()=> {
  
 
   }
-  function creating_string(minutes, seconds) {
+  function creating_string(remaining_seconds) {
+
+    let minutes = Math.floor(state.remain_in_s/60)
+    let seconds = state.remain_in_s%60
 
     let seconds_string;
     let minutes_string;
@@ -189,62 +185,14 @@ React.useEffect(()=> {
     setState(prev=> {
       return (
         {...prev, 
-          ongoing: (!prev.ongoing)
+          ongoing: (!prev.ongoing),
+          remaining: creating_string(prev.remain_in_s)
         }
       )
     })
-  }
-  /*  console.log(state)
-
-    if (state.state === "session"){
-      console.log(state)
-      start = new Date(Date.now())
-      end = new Date(start.getTime() + (state.sessionLength)*60*1000)
-
-      minutes = ((end.getTime() - start.getTime())/1000)/60
-      seconds = ((end.getTime() - start.getTime())/1000)%60 
-  /*  const start = new Date(Date.now())
-      console.log(start)
-     
-
-      const end= new Date(start.getTime() + (state.sessionLength)*60*1000)
-      console.log(end)
-
-      let minutes = ((end.getTime() - start.getTime())/1000)/60
-      let seconds = ((end.getTime() - start.getTime())/1000)%60 
-      
-
-      console.log("remaining time " + creating_string(minutes,seconds))
-
-      
-
-  
-   
-     while (minutes !== 0 && seconds >= 0) {
-        let currenttime = new Date(Date.now())
-        minutes = Math.floor(((end.getTime() - currenttime.getTime())/1000)/60)
-        seconds = Math.floor(((end.getTime() - currenttime.getTime())/1000)%60)
-        if (((end.getTime() - currenttime.getTime())%1000) === 0) {
-            let remain = (creating_string(minutes, seconds))
-            console.log(remain)
-            console.log(state)
-              setState(prev => {
-                return (
-                  {
-                  ...prev, remaining: remain
-                }
-                )
-              })
-            }
-            
-        }    
-  
-*/
-
-
-
+    console.log(state.ongoing)
     
-
+  }
   
 
   return (
@@ -273,8 +221,8 @@ React.useEffect(()=> {
       </div>
 
       <div className='session_container'>
-          <div id="timer-label">Session</div>
-          <div id="time-left">{state.remaining}</div>
+          <div id="timer-label">{state.state}</div>
+          <div id="time-left">{state.ongoing ? creating_string(state.remain_in_s) : state.remaining}</div>
           <div className='button_container'>
             <div id="start_stop" onClick={handleStartStop}>start/stop</div>
             <div id="reset" onClick={handleReset}>Reset</div>
